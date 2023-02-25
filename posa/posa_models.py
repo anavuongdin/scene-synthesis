@@ -306,7 +306,7 @@ class Decoder(nn.Module):
 
         self.de_spiral = nn.ModuleList()
         # self.de_spiral.append(GraphLin_block(3, 3 + z_dim, normalization_mode, num_groups))
-        self.de_spiral.append(GraphLin_block(3, z_dim // 2, normalization_mode, num_groups))
+        self.de_spiral.append(GraphLin_block(3 + self.f_dim, z_dim // 2, normalization_mode, num_groups))
         self.de_spiral.append(GraphLin_block(z_dim // 2, self.channels[0], normalization_mode, num_groups))
         for _ in range(num_hidden_layers):
             self.de_spiral.append(
@@ -315,8 +315,9 @@ class Decoder(nn.Module):
         self.de_spiral.append(SpiralConv(self.channels[0], self.f_dim, self.spiral_indices[0]))
         self.de_spiral = nn.Sequential(*self.de_spiral)
 
-    def forward(self, vertices):
-        x = self.de_spiral(vertices)
+    def forward(self, x, vertices):
+        x = torch.cat((vertices, x), dim=-1)
+        x = self.de_spiral(x)
         return x
 
 
