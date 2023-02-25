@@ -78,7 +78,7 @@ class SceneDiffusionModel(nn.Module):
         emb = emb.repeat(1, seq_len, 1)
 
         # Embed human motions
-        posa_out = self.posa(vertices)
+        posa_out = self.posa(x, vertices)
         out = self.linear_extraction(posa_out)
 
         # Final embedding features
